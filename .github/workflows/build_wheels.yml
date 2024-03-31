@@ -1,0 +1,206 @@
+name: Python wheels
+on:
+  push:
+    branches:
+      - master
+  # release:
+  #   types:
+  #     - created
+  # Add add windows, manylinux, macos
+
+env:
+  SNOPT7LICENSE: ${{ github.workspace }}/src/snopt7.lic
+
+jobs:
+  wheels-macos_py38:
+    runs-on: macos-11
+    # runs-on: ${{matrix.os}}
+    # strategy:
+    #   matrix:
+    #     os: [ubuntu-latest, windows-latest, macos-latest]
+    env:
+      SNOPT7LIB: ${{ github.workspace }}/src/libsnopt7_macos
+      # DYLD_LIBRARY_PATH: ${{ github.workspace }}/src/libsnopt7_macos
+      # DYLD_LIBRARY_PATH: /opt/anaconda3/pkgs/libgfortran5-9.3.0-h6c81a4c_22/lib"
+      # DYLD_FALLBACK_LIBRARY_PATH: ${{ github.workspace }}/src/libsnopt7_macos
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python 3.x
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.8"
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade numpy scipy setuptools wheel
+          brew reinstall gcc
+
+      - name: Build wheels
+        run: |
+          # python setup.py build
+          # python setup.py install --user
+          python setup.py bdist_wheel
+
+      - uses: actions/upload-artifact@v2
+        with:
+          # archives:1
+          name: dist
+          path: dist
+
+  wheels-macos_py39:
+    runs-on: macos-11
+
+    env:
+      SNOPT7LIB: ${{ github.workspace }}/src/libsnopt7_macos
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python 3.x
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.9"
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade numpy scipy setuptools wheel
+          brew reinstall gcc
+
+      - name: Build wheels
+        run: |
+          python setup.py bdist_wheel
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: dist
+          path: dist
+
+  wheels-linux_py38:
+    runs-on: ubuntu-latest
+
+    env:
+      SNOPT7LIB: ${{ github.workspace }}/src/libsnopt7_linux
+      # LD_LIBRARY_PATH: ${{ github.workspace }}/src/libsnopt7_linux
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python 3.x
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.8"
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade numpy scipy setuptools wheel
+
+      - name: Build wheels
+        run: |
+          python setup.py bdist_wheel
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: dist
+          path: dist
+
+  wheels-linux_py39:
+    runs-on: ubuntu-latest
+
+    env:
+      SNOPT7LIB: ${{ github.workspace }}/src/libsnopt7_linux
+      # LD_LIBRARY_PATH: ${{ github.workspace }}/src/libsnopt7_linux
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python 3.x
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.9"
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade numpy scipy setuptools wheel
+
+      - name: Build wheels
+        run: |
+          python setup.py bdist_wheel
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: dist
+          path: dist
+
+  # wheels-windows:
+  #   runs-on: windows-latest
+
+  #   env:
+  #     SNOPT7LIB: ${{ github.workspace }}/src/libsnopt7_windows
+
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #     - name: Set up Python 3.x
+  #       uses: actions/setup-python@v2
+  #       with:
+  #         python-version: "3.9"
+  #     - name: Install dependencies
+  #       run: |
+  #         python -m pip install --upgrade numpy scipy setuptools wheel
+  #         # sudo apt-get install binutils
+  #         # pip install --upgrade pip
+  #         # sudo apt-get update
+  #         # # sudo apt-get install gcc
+
+  #         # # sudo add-apt-repository ppa:jonathonf/gcc-7.1
+  #         # # sudo apt-get update
+  #         # # sudo apt-get install gcc-7 g++-7
+  #         # sudo apt-get install gfortran-7
+
+  #         # here=`pwd`
+  #         # ls
+  #         # ls ${{ github.workspace }}
+  #         # print(${here})
+  #         # print(here)
+  #         # print(${{ github.workspace }})
+  #         # printf '\nexport SNOPT7LIB=./src/libsnopt7_linux' >>~/.bashrc
+  #         cd $SNOPT7LIB
+  #         pwd
+  #         # printf '\nexport SNOPT_LICENSE=${here}/src/snopt7.lic' >>~/.bashrc
+  #         # printf '\nexport LD_LIBRARY_PATH=/home/runner/work/snopt-python/snopt-python/src/libsnopt7_linux' >>~/.bashrc
+  #         cd
+  #         pwd
+  #         echo $LD_LIBRARY_PATH
+  #         echo $DYLD_LIBRARY_PATH
+  #         # pwd
+
+  #     - name: Build wheels
+  #       run: |
+  #         # python setup.py build
+  #         # python setup.py install --user
+  #         python setup.py bdist_wheel
+
+  #     - uses: actions/upload-artifact@v2
+  #       with:
+  #         name: dist_windows
+  #         path: dist_windows
+
+  # publish:
+  #   needs: wheels
+  #   runs-on: ubuntu-latest
+
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #     - name: Set up Python 3.x
+  #       uses: actions/setup-python@v2
+  #       with:
+  #         python-version: "3.x"
+
+  #     # - name: Build and Push Docker Image
+  #     - name: Set up QEMU
+  #       uses: docker/setup-qemu-action@v2
+  #     - name: Set up Docker Buildx
+  #       uses: docker/setup-buildx-action@v2
+  #     - name: Login to DockerHub
+  #       uses: docker/login-action@v2
+  #       with:
+  #         username: ${{ secrets.DOCKERHUB_USERNAME }}
+  #         password: ${{ secrets.DOCKERHUB_TOKEN }}
+  #     - name: Build and push
+  #       uses: docker/build-push-action@v3
+  #       with:
+  #         push: true
+  #         tags: user/app:latest
