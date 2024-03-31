@@ -25,9 +25,9 @@ jobs:
       # DYLD_FALLBACK_LIBRARY_PATH: ${{ github.workspace }}/src/libsnopt7_macos
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: Set up Python 3.x
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: "3.8"
       - name: Install dependencies
@@ -41,7 +41,42 @@ jobs:
           # python setup.py install --user
           python setup.py bdist_wheel
 
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
+        with:
+          # archives:1
+          name: dist
+          path: dist
+
+  wheels-macos_py311:
+    runs-on: macos-latest
+    # runs-on: ${{matrix.os}}
+    # strategy:
+    #   matrix:
+    #     os: [ubuntu-latest, windows-latest, macos-latest]
+    env:
+      SNOPT7LIB: ${{ github.workspace }}/src/libsnopt7_macos
+      # DYLD_LIBRARY_PATH: ${{ github.workspace }}/src/libsnopt7_macos
+      # DYLD_LIBRARY_PATH: /opt/anaconda3/pkgs/libgfortran5-9.3.0-h6c81a4c_22/lib"
+      # DYLD_FALLBACK_LIBRARY_PATH: ${{ github.workspace }}/src/libsnopt7_macos
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python 3.x
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.8"
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade numpy scipy setuptools wheel
+          brew reinstall gcc
+
+      - name: Build wheels
+        run: |
+          # python setup.py build
+          # python setup.py install --user
+          python setup.py bdist_wheel
+
+      - uses: actions/upload-artifact@v3
         with:
           # archives:1
           name: dist
@@ -54,9 +89,9 @@ jobs:
       SNOPT7LIB: ${{ github.workspace }}/src/libsnopt7_macos
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: Set up Python 3.x
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: "3.9"
       - name: Install dependencies
@@ -68,7 +103,7 @@ jobs:
         run: |
           python setup.py bdist_wheel
 
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         with:
           name: dist
           path: dist
@@ -81,9 +116,9 @@ jobs:
       # LD_LIBRARY_PATH: ${{ github.workspace }}/src/libsnopt7_linux
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: Set up Python 3.x
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: "3.8"
       - name: Install dependencies
@@ -94,7 +129,7 @@ jobs:
         run: |
           python setup.py bdist_wheel
 
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         with:
           name: dist
           path: dist
@@ -107,9 +142,9 @@ jobs:
       # LD_LIBRARY_PATH: ${{ github.workspace }}/src/libsnopt7_linux
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: Set up Python 3.x
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: "3.9"
       - name: Install dependencies
@@ -120,7 +155,7 @@ jobs:
         run: |
           python setup.py bdist_wheel
 
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         with:
           name: dist
           path: dist
@@ -132,9 +167,9 @@ jobs:
   #     SNOPT7LIB: ${{ github.workspace }}/src/libsnopt7_windows
 
   #   steps:
-  #     - uses: actions/checkout@v2
+  #     - uses: actions/checkout@v4
   #     - name: Set up Python 3.x
-  #       uses: actions/setup-python@v2
+  #       uses: actions/setup-python@v4
   #       with:
   #         python-version: "3.9"
   #     - name: Install dependencies
