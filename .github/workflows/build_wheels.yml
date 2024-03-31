@@ -64,7 +64,7 @@ jobs:
       - name: Set up Python 3.x
         uses: actions/setup-python@v4
         with:
-          python-version: "3.8"
+          python-version: "3.11"
       - name: Install dependencies
         run: |
           python -m pip install --upgrade numpy scipy setuptools wheel
@@ -98,6 +98,32 @@ jobs:
         run: |
           python -m pip install --upgrade numpy scipy setuptools wheel
           brew reinstall gcc
+
+      - name: Build wheels
+        run: |
+          python setup.py bdist_wheel
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: dist
+          path: dist
+
+  wheels-linux_py311:
+    runs-on: ubuntu-latest
+
+    env:
+      SNOPT7LIB: ${{ github.workspace }}/src/libsnopt7_linux
+      # LD_LIBRARY_PATH: ${{ github.workspace }}/src/libsnopt7_linux
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python 3.x
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade numpy scipy setuptools wheel
 
       - name: Build wheels
         run: |
